@@ -14,6 +14,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def main():
     github_url = input("Enter the GitHub URL of the repository: ")
+    model_name = input("Enter the OpenAi model name: ")
     repo_name = github_url.split("/")[-1]
     print("Cloning the repository...")
     with tempfile.TemporaryDirectory() as local_path:
@@ -24,7 +25,7 @@ def main():
                 exit()
 
             print("Repository cloned. Indexing files...")
-            llm = OpenAI(api_key=OPENAI_API_KEY, temperature=0.2)
+            llm = OpenAI(api_key=OPENAI_API_KEY, temperature=0.2, model_name=model_name)
 
             template = """
             Repo: {repo_name} ({github_url}) | Conv: {conversation_history} | Docs: {numbered_documents} | Q: {question} | FileCount: {file_type_counts} | FileNames: {filenames}
