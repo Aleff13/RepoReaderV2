@@ -3,7 +3,7 @@ import os
 import tempfile
 from dotenv import load_dotenv
 from langchain import PromptTemplate, LLMChain
-from langchain.llms import OpenAI
+from langchain.chat_models import ChatOpenAI
 from config import WHITE, GREEN, RESET_COLOR
 from utils import format_user_question
 from file_processing import clone_github_repo, load_and_index_files
@@ -32,7 +32,7 @@ def main():
             if(use_ollama == "y"):
                 llm = OllamaLLM(model=model_name)
             else:
-                llm = OpenAI(api_key=OPENAI_API_KEY, temperature=0.2, model_name=model_name)
+                llm = ChatOpenAI(api_key=OPENAI_API_KEY, temperature=0.2, model=model_name)
 
             template = """
             Repo: {repo_name} ({github_url}) | Conv: {conversation_history} | Docs: {numbered_documents} | Q: {question} | FileCount: {file_type_counts} | FileNames: {filenames}
