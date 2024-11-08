@@ -4,17 +4,20 @@ import tempfile
 from dotenv import load_dotenv
 from langchain import PromptTemplate, LLMChain
 from langchain.llms import OpenAI
-from config import WHITE, GREEN, RESET_COLOR, model_name
+from config import WHITE, GREEN, RESET_COLOR
 from utils import format_user_question
 from file_processing import clone_github_repo, load_and_index_files
 from questions import ask_question, QuestionContext
+from langchain_ollama.llms import OllamaLLM
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 def main():
     github_url = input("Enter the GitHub URL of the repository: ")
-    model_name = input("Enter the OpenAi model name: ")
+    use_ollama = input("Do you want to use a local ollama model (y/n)? ")
+    model_name = input("Enter the model name: ")
+
     repo_name = github_url.split("/")[-1]
     print("Cloning the repository...")
     with tempfile.TemporaryDirectory() as local_path:
@@ -25,13 +28,17 @@ def main():
                 exit()
 
             print("Repository cloned. Indexing files...")
-            llm = OpenAI(api_key=OPENAI_API_KEY, temperature=0.2, model_name=model_name)
+
+            if(use_ollama == "y"):
+                llm = OllamaLLM(model=model_name)
+            else:
+                llm = OpenAI(api_key=OPENAI_API_KEY, temperature=0.2, model_name=model_name)
 
             template = """
             Repo: {repo_name} ({github_url}) | Conv: {conversation_history} | Docs: {numbered_documents} | Q: {question} | FileCount: {file_type_counts} | FileNames: {filenames}
 
             Instr:
-            1. Answer based on context/docs.
+            1. Answer based on context/docs/code.
             2. Focus on repo/code.
             3. Consider:
                 a. Purpose/features - describe.
