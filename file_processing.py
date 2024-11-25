@@ -8,6 +8,7 @@ from rank_bm25 import BM25Okapi
 from langchain.document_loaders import DirectoryLoader, NotebookLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from utils import clean_and_tokenize
+from langchain_community.document_loaders import TextLoader
 
 def clone_github_repo(github_url, local_path):
     try:
@@ -18,7 +19,7 @@ def clone_github_repo(github_url, local_path):
         return False
 
 def load_and_index_files(repo_path):
-    extensions = ['txt', 'md', 'markdown', 'rst', 'py', 'js', 'java', 'c', 'cpp', 'cs', 'go', 'rb', 'php', 'scala', 'html', 'htm', 'xml', 'json', 'yaml', 'yml', 'ini', 'toml', 'cfg', 'conf', 'sh', 'bash', 'css', 'scss', 'sql', 'gitignore', 'dockerignore', 'editorconfig', 'ipynb']
+    extensions = ['txt', 'md', 'markdown', 'rst', 'py', 'ts', 'js', 'java', 'c', 'cpp', 'cs', 'go', 'rb', 'php', 'scala', 'html', 'htm', 'xml', 'json', 'yaml', 'yml', 'ini', 'toml', 'cfg', 'conf', 'sh', 'bash', 'css', 'scss', 'sql', 'gitignore', 'dockerignore', 'editorconfig', 'ipynb', 'cob', 'cbl', 'cpy', 'jcl']
 
     file_type_counts = {}
     documents_dict = {}
@@ -30,7 +31,8 @@ def load_and_index_files(repo_path):
             if ext == 'ipynb':
                 loader = NotebookLoader(str(repo_path), include_outputs=True, max_output_length=20, remove_newline=True)
             else:
-                loader = DirectoryLoader(repo_path, glob=glob_pattern)
+                text_loader_kwargs={'autodetect_encoding': True}
+                loader = DirectoryLoader(repo_path, glob=glob_pattern, loader_cls=TextLoader, loader_kwargs=text_loader_kwargs)
 
             loaded_documents = loader.load() if callable(loader.load) else []
             if loaded_documents:
