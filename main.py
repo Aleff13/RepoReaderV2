@@ -60,6 +60,7 @@ def main():
             question_context = QuestionContext(index, documents, llm_chain, model_name, repo_name, github_url, conversation_history, file_type_counts, filenames)
             while True:
                 try:
+                    # todo criar arquivo de conversa para salvar historico
                     user_question = input("\n" + WHITE + "Ask a question about the repository (type 'exit()' to quit): " + RESET_COLOR)
                     if user_question.lower() == "exit()":
                         break
